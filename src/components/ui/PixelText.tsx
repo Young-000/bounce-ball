@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { JSX } from 'react';
 
 type TextSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 
