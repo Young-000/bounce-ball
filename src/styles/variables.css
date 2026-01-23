@@ -1,0 +1,80 @@
+/* 게임 색상 변수 - 2000년대 플래시 게임 감성 */
+:root {
+  /* ===== 배경 색상 ===== */
+  --bg-main: #1a1a2e;
+  --bg-game: #16213e;
+  --bg-panel: #0f3460;
+  --bg-overlay: rgba(0, 0, 0, 0.7);
+
+  /* ===== 블록 색상 (벽돌 감성) ===== */
+  /* Normal Block - 갈색 벽돌 */
+  --block-normal: #8b7355;
+  --block-normal-light: #a68968;
+  --block-normal-dark: #6b5544;
+  --block-normal-border: #4a3f35;
+
+  /* Jump Block - 오렌지 골드 */
+  --block-jump: #f4a261;
+  --block-jump-light: #ffd89b;
+  --block-jump-dark: #d68f4c;
+  --block-jump-border: #c77b3f;
+
+  /* Breakable Block - 회색 벽돌 */
+  --block-breakable: #94a3b8;
+  --block-breakable-light: #cbd5e1;
+  --block-breakable-dark: #64748b;
+  --block-breakable-border: #475569;
+  --block-breakable-crack: #1e293b;
+
+  /* Arrow Block - 밝은 파랑 */
+  --block-arrow: #4dabf7;
+  --block-arrow-light: #74c0fc;
+  --block-arrow-dark: #339af0;
+  --block-arrow-border: #1c7ed6;
+
+  /* Bomb Block - 빨강 */
+  --block-bomb: #ff6b6b;
+  --block-bomb-light: #ff8787;
+  --block-bomb-dark: #fa5252;
+  --block-bomb-border: #e03131;
+
+  /* ===== 공 색상 ===== */
+  --ball-main: #ffe66d;
+  --ball-light: #ffed4e;
+  --ball-dark: #ffd43b;
+  --ball-outline: #ffc107;
+  --ball-shadow: rgba(255, 169, 77, 0.5);
+
+  /* ===== 출구 색상 ===== */
+  --exit-main: #2ec4b6;
+  --exit-light: #4fd1c5;
+  --exit-dark: #06a09e;
+  --exit-glow: rgba(46, 196, 182, 0.4);
+
+  /* ===== UI 색상 ===== */
+  --ui-primary: #f4a261;
+  --ui-primary-hover: #e76f51;
+  --ui-secondary: #4dabf7;
+  --ui-secondary-hover: #339af0;
+  --ui-success: #51cf66;
+  --ui-danger: #ff6b6b;
+  --ui-disabled: #64748b;
+
+  /* ===== 텍스트 색상 ===== */
+  --text-primary: #ffffff;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --text-accent: #f4a261;
+
+  /* ===== 컨트롤 색상 ===== */
+  --control-bg: rgba(255, 255, 255, 0.1);
+  --control-border: rgba(255, 255, 255, 0.2);
+  --control-active: rgba(244, 162, 97, 0.4);
+  --control-icon: #ffffff;
+
+  /* ===== 그림자 ===== */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.5);
+  --shadow-pixel: 4px 4px 0 rgba(0, 0, 0, 0.3);
+}
