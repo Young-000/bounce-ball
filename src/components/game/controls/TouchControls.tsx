@@ -78,6 +78,7 @@ export function TouchControls({
         onMouseUp={handleLeftTouchEnd}
         onMouseLeave={handleLeftTouchEnd}
         disabled={disabled}
+        aria-label="왼쪽으로 이동"
         style={{ fontFamily: 'Arial, sans-serif' }}
       >
         <span className="transform -translate-y-1">◀</span>
@@ -96,6 +97,7 @@ export function TouchControls({
         onMouseUp={handleRightTouchEnd}
         onMouseLeave={handleRightTouchEnd}
         disabled={disabled}
+        aria-label="오른쪽으로 이동"
         style={{ fontFamily: 'Arial, sans-serif' }}
       >
         <span className="transform -translate-y-1">▶</span>
