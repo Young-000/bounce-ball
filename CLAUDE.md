@@ -42,19 +42,21 @@ src/
 | GRAVITY | 0.3 | 중력 |
 | BOUNCE_VELOCITY | -8 | 바운스 속도 (고정) |
 | MOVE_SPEED | 4 | 좌우 이동 속도 |
-| BALL_RADIUS | 6 | 공 반지름 |
+| BALL_RADIUS | 4 | 공 반지름 |
 | JUMP_BOOST | 1.8 | 점프 블록 배수 |
 
 ## 체크리스트
 
 ### 코드 품질
-- [ ] `npm run lint` 에러 0개
-- [ ] `npm run type-check` 에러 0개
-- [ ] `npm run build` 성공
+- [x] `npm run lint` 에러 0개
+- [x] `npm run type-check` 에러 0개
+- [x] `npm run build` 성공
 
 ### 테스트
-- [ ] `npm test` 통과율 80%+
-- [ ] 핵심 로직 (Physics, Collision) 테스트 커버리지
+- [x] `npm test` 통과율 80%+ (31/31 테스트 통과, 100%)
+- [x] 핵심 로직 테스트 커버리지
+  - Physics.test.ts: 18개 테스트
+  - Collision.test.ts: 13개 테스트
 
 ### 기능
 - [x] 공 자동 바운스
@@ -64,9 +66,12 @@ src/
 - [x] 클리어/게임오버 화면
 - [x] 터치 컨트롤
 
+### 접근성
+- [x] TouchControls aria-label 추가 (좌/우 버튼)
+
 ### 배포
-- [ ] Vercel 배포
-- [ ] 프로덕션 URL 정상 동작
+- [x] Vercel 배포
+- [x] 프로덕션 URL: https://bounce-ball-dusky.vercel.app
 
 ## 스크립트
 
