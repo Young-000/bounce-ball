@@ -96,8 +96,8 @@ export function saveStageRecord(
       bestTime: existing?.bestTime 
         ? Math.min(existing.bestTime, clearTime)
         : clearTime,
-      bestDeaths: existing?.bestDeaths !== null
-        ? Math.min(existing.bestDeaths ?? Infinity, deathCount)
+      bestDeaths: existing?.bestDeaths != null
+        ? Math.min(existing.bestDeaths, deathCount)
         : deathCount,
       stars: Math.max(existing?.stars ?? 0, stars),
     };
