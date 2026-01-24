@@ -20,7 +20,6 @@ function App(): React.ReactElement {
   const {
     screen,
     gameState,
-    progress,
     startGame,
     goToStageSelect,
     goToStart,
@@ -28,6 +27,7 @@ function App(): React.ReactElement {
     nextStage,
     updateGame,
     isRunning,
+    isNewRecord,
   } = useGameState();
 
   // 입력 처리
@@ -74,8 +74,6 @@ function App(): React.ReactElement {
         <StageSelectScreen
           onSelectStage={startGame}
           onBack={goToStart}
-          clearedStages={progress.clearedStages}
-          bestTimes={progress.bestTimes}
         />
       )}
 
@@ -123,10 +121,7 @@ function App(): React.ReactElement {
           stageName={currentStage.name}
           clearTime={gameState.elapsedTime}
           deathCount={gameState.deathCount}
-          isNewRecord={
-            !progress.bestTimes[gameState.currentStage] ||
-            gameState.elapsedTime < progress.bestTimes[gameState.currentStage]
-          }
+          isNewRecord={isNewRecord}
           hasNextStage={gameState.currentStage < getTotalStages()}
           onNextStage={nextStage}
           onRetry={retryStage}

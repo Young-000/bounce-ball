@@ -1,50 +1,38 @@
 import { Exit } from '../../../game/types';
 
 /**
- * 출구 색상 정의
+ * 출구 색상 정의 (네온 퍼플)
  */
 const EXIT_COLORS = {
-  main: '#2ec4b6',
-  light: '#4fd1c5',
-  dark: '#06a09e',
-  glow: 'rgba(46, 196, 182, 0.4)',
+  main: '#aa44ff',
+  light: '#cc66ff',
+  dark: '#8822cc',
+  glow: '#aa44ff66',
 };
 
 /**
- * 출구 글로우 효과를 그립니다
+ * 출구 글로우 효과 (네온)
  */
 function drawExitGlow(
   ctx: CanvasRenderingContext2D,
   exit: Exit,
   time: number
 ): void {
-  const centerX = exit.x + exit.width / 2;
-  const centerY = exit.y + exit.height / 2;
-
   // 펄스 효과
-  const pulse = 1 + Math.sin(time * 0.003) * 0.2;
-  const glowRadius = Math.max(exit.width, exit.height) * pulse;
+  const pulse = 1 + Math.sin(time * 0.004) * 0.3;
 
-  // 외부 글로우
-  const gradient = ctx.createRadialGradient(
-    centerX, centerY, 0,
-    centerX, centerY, glowRadius
-  );
-  gradient.addColorStop(0, 'rgba(46, 196, 182, 0.3)');
-  gradient.addColorStop(0.5, 'rgba(46, 196, 182, 0.1)');
-  gradient.addColorStop(1, 'rgba(46, 196, 182, 0)');
+  // 네온 글로우
+  ctx.shadowColor = EXIT_COLORS.glow;
+  ctx.shadowBlur = 20 * pulse;
 
-  ctx.fillStyle = gradient;
-  ctx.fillRect(
-    exit.x - glowRadius / 2,
-    exit.y - glowRadius / 2,
-    exit.width + glowRadius,
-    exit.height + glowRadius
-  );
+  ctx.fillStyle = EXIT_COLORS.glow;
+  ctx.fillRect(exit.x - 5, exit.y - 5, exit.width + 10, exit.height + 10);
+
+  ctx.shadowBlur = 0;
 }
 
 /**
- * 출구 본체를 그립니다
+ * 픽셀 스타일 출구 본체
  */
 function drawExitBody(
   ctx: CanvasRenderingContext2D,
@@ -52,33 +40,45 @@ function drawExitBody(
   time: number
 ): void {
   const { x, y, width, height } = exit;
+  const px = 2; // 픽셀 크기
 
-  // 문틀 (프레임)
+  // 네온 글로우
+  ctx.shadowColor = '#aa44ff';
+  ctx.shadowBlur = 15;
+
+  // 1. 문틀 (프레임) - 어두운 색
   ctx.fillStyle = EXIT_COLORS.dark;
-  ctx.fillRect(x - 4, y - 4, width + 8, height + 8);
+  ctx.fillRect(x - px * 2, y - px * 2, width + px * 4, height + px * 4);
 
-  // 문 (그라데이션)
-  const gradient = ctx.createLinearGradient(x, y, x + width, y + height);
-  gradient.addColorStop(0, EXIT_COLORS.light);
-  gradient.addColorStop(0.5, EXIT_COLORS.main);
-  gradient.addColorStop(1, EXIT_COLORS.dark);
-
-  ctx.fillStyle = gradient;
+  // 2. 문 본체 - 메인 색
+  ctx.fillStyle = EXIT_COLORS.main;
   ctx.fillRect(x, y, width, height);
 
-  // 내부 빛 효과 (펄스)
-  const innerPulse = 0.3 + Math.sin(time * 0.005) * 0.2;
-  ctx.fillStyle = `rgba(255, 255, 255, ${innerPulse})`;
-  ctx.fillRect(x + 4, y + 4, width - 8, height - 8);
+  // 3. 하이라이트 (상단/좌측)
+  ctx.fillStyle = EXIT_COLORS.light;
+  ctx.fillRect(x, y, width, px * 2);
+  ctx.fillRect(x, y, px * 2, height);
 
-  // 테두리
+  // 4. 그림자 (하단/우측)
+  ctx.fillStyle = EXIT_COLORS.dark;
+  ctx.fillRect(x, y + height - px * 2, width, px * 2);
+  ctx.fillRect(x + width - px * 2, y, px * 2, height);
+
+  ctx.shadowBlur = 0;
+
+  // 5. 내부 빛 효과 (펄스)
+  const innerPulse = 0.4 + Math.sin(time * 0.006) * 0.3;
+  ctx.fillStyle = `rgba(255, 255, 255, ${innerPulse})`;
+  ctx.fillRect(x + px * 3, y + px * 3, width - px * 6, height - px * 6);
+
+  // 6. 테두리
   ctx.strokeStyle = EXIT_COLORS.light;
-  ctx.lineWidth = 2;
-  ctx.strokeRect(x, y, width, height);
+  ctx.lineWidth = 1;
+  ctx.strokeRect(x + 0.5, y + 0.5, width - 1, height - 1);
 }
 
 /**
- * 출구 화살표를 그립니다 (오른쪽 출구 표시)
+ * 픽셀 화살표
  */
 function drawExitArrow(
   ctx: CanvasRenderingContext2D,
@@ -87,21 +87,19 @@ function drawExitArrow(
 ): void {
   const centerX = exit.x + exit.width / 2;
   const centerY = exit.y + exit.height / 2;
+  const px = 2;
 
   // 깜빡이는 화살표
-  const blink = Math.sin(time * 0.008) > 0;
+  const blink = Math.sin(time * 0.01) > 0;
   if (!blink) return;
 
   ctx.fillStyle = '#ffffff';
-  ctx.beginPath();
 
-  // 오른쪽 화살표
-  const arrowSize = Math.min(exit.width, exit.height) * 0.3;
-  ctx.moveTo(centerX + arrowSize, centerY);
-  ctx.lineTo(centerX - arrowSize * 0.3, centerY - arrowSize * 0.6);
-  ctx.lineTo(centerX - arrowSize * 0.3, centerY + arrowSize * 0.6);
-  ctx.closePath();
-  ctx.fill();
+  // 픽셀 화살표 (오른쪽 방향)
+  // ▶ 모양
+  ctx.fillRect(centerX - px * 2, centerY - px * 2, px, px * 4);
+  ctx.fillRect(centerX - px, centerY - px, px, px * 2);
+  ctx.fillRect(centerX, centerY - px * 0.5, px, px);
 }
 
 /**
@@ -143,13 +141,17 @@ export function renderClearExit(
   ctx.globalAlpha = 1 - progress * 0.5;
   drawExitBody(ctx, exit, 0);
 
-  // 폭발 글로우
+  // 네온 폭발 글로우
+  ctx.shadowColor = '#aa44ff';
+  ctx.shadowBlur = 30 * progress;
+
   const gradient = ctx.createRadialGradient(
     centerX, centerY, 0,
     centerX, centerY, exit.width * (1 + progress * 2)
   );
-  gradient.addColorStop(0, `rgba(255, 255, 255, ${progress})`);
-  gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+  gradient.addColorStop(0, `rgba(170, 68, 255, ${progress})`);
+  gradient.addColorStop(0.5, `rgba(170, 68, 255, ${progress * 0.5})`);
+  gradient.addColorStop(1, 'rgba(170, 68, 255, 0)');
 
   ctx.fillStyle = gradient;
   ctx.fillRect(
@@ -159,5 +161,6 @@ export function renderClearExit(
     exit.height * 3
   );
 
+  ctx.shadowBlur = 0;
   ctx.restore();
 }

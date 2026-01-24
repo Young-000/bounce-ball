@@ -1,49 +1,13 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { GameState, InputState } from '../game/types';
 import { getStage, getTotalStages } from '../game/stages/stageData';
 import { initializeStage, updateGameState, restartStage } from '../game/engine/GameLoop';
+import {
+  saveStageRecord,
+  getStageRecord,
+} from '../game/storage/saveService';
 
 type Screen = 'start' | 'stageSelect' | 'playing' | 'clear' | 'dead';
-
-interface GameProgress {
-  clearedStages: Set<number>;
-  bestTimes: Record<number, number>;
-}
-
-const STORAGE_KEY = 'bounce-ball-progress';
-
-/**
- * 로컬 스토리지에서 진행 상황 로드
- */
-function loadProgress(): GameProgress {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      return {
-        clearedStages: new Set(parsed.clearedStages || []),
-        bestTimes: parsed.bestTimes || {},
-      };
-    }
-  } catch (e) {
-    console.error('Failed to load progress:', e);
-  }
-  return { clearedStages: new Set(), bestTimes: {} };
-}
-
-/**
- * 로컬 스토리지에 진행 상황 저장
- */
-function saveProgress(progress: GameProgress): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-      clearedStages: Array.from(progress.clearedStages),
-      bestTimes: progress.bestTimes,
-    }));
-  } catch (e) {
-    console.error('Failed to save progress:', e);
-  }
-}
 
 interface UseGameStateReturn {
   // 현재 화면
@@ -51,9 +15,6 @@ interface UseGameStateReturn {
 
   // 게임 상태
   gameState: GameState | null;
-
-  // 진행 상황
-  progress: GameProgress;
 
   // 액션들
   startGame: (stageNumber?: number) => void;
@@ -67,6 +28,9 @@ interface UseGameStateReturn {
 
   // 게임 루프 실행 여부
   isRunning: boolean;
+
+  // 클리어 화면용 정보
+  isNewRecord: boolean;
 }
 
 /**
@@ -75,13 +39,8 @@ interface UseGameStateReturn {
 export function useGameState(): UseGameStateReturn {
   const [screen, setScreen] = useState<Screen>('start');
   const [gameState, setGameState] = useState<GameState | null>(null);
-  const [progress, setProgress] = useState<GameProgress>(loadProgress);
   const [currentStageNumber, setCurrentStageNumber] = useState(1);
-
-  // 진행 상황 변경 시 저장
-  useEffect(() => {
-    saveProgress(progress);
-  }, [progress]);
+  const [isNewRecord, setIsNewRecord] = useState(false);
 
   // 게임 시작
   const startGame = useCallback((stageNumber: number = 1) => {
@@ -119,13 +78,31 @@ export function useGameState(): UseGameStateReturn {
 
   // 다음 스테이지
   const nextStage = useCallback(() => {
-    const nextStageNumber = currentStageNumber + 1;
-    if (nextStageNumber <= getTotalStages()) {
-      startGame(nextStageNumber);
-    } else {
-      goToStart();
+    const nextStageNum = currentStageNumber + 1;
+
+    if (nextStageNum > getTotalStages()) {
+      // 모든 스테이지 클리어
+      setScreen('start');
+      setGameState(null);
+      return;
     }
-  }, [currentStageNumber, startGame, goToStart]);
+
+    const stage = getStage(nextStageNum);
+    if (!stage) {
+      // 스테이지 데이터 없음 (안전장치)
+      setScreen('start');
+      setGameState(null);
+      return;
+    }
+
+    // 직접 상태 설정 (startGame 의존성 제거)
+    const initialState = initializeStage(stage, nextStageNum);
+    initialState.status = 'playing';
+
+    setGameState(initialState);
+    setCurrentStageNumber(nextStageNum);
+    setScreen('playing');
+  }, [currentStageNumber]);
 
   // 게임 업데이트
   const updateGame = useCallback((input: InputState, deltaTime: number) => {
@@ -136,32 +113,30 @@ export function useGameState(): UseGameStateReturn {
 
     // 상태 변화 감지
     if (newState.status === 'cleared' && gameState.status !== 'cleared') {
-      // 클리어!
+      // 클리어! - 기록 저장
       const clearTime = newState.elapsedTime;
-      const isNewRecord = !progress.bestTimes[currentStageNumber] ||
-                         clearTime < progress.bestTimes[currentStageNumber];
+      const deathCount = newState.deathCount;
 
-      setProgress(prev => ({
-        clearedStages: new Set([...prev.clearedStages, currentStageNumber]),
-        bestTimes: {
-          ...prev.bestTimes,
-          [currentStageNumber]: isNewRecord ? clearTime : prev.bestTimes[currentStageNumber],
-        },
-      }));
+      // 기존 기록 확인
+      const existingRecord = getStageRecord(currentStageNumber);
+      const newRecord = !existingRecord?.bestTime || clearTime < existingRecord.bestTime;
 
+      // 저장 서비스로 기록 저장
+      saveStageRecord(currentStageNumber, clearTime, deathCount);
+
+      setIsNewRecord(newRecord);
       setScreen('clear');
     } else if (newState.status === 'dead' && gameState.status !== 'dead') {
       // 사망!
       setScreen('dead');
     }
-  }, [gameState, screen, currentStageNumber, progress]);
+  }, [gameState, screen, currentStageNumber]);
 
   const isRunning = screen === 'playing' && gameState?.status === 'playing';
 
   return {
     screen,
     gameState,
-    progress,
     startGame,
     goToStageSelect,
     goToStart,
@@ -169,6 +144,7 @@ export function useGameState(): UseGameStateReturn {
     nextStage,
     updateGame,
     isRunning,
+    isNewRecord,
   };
 }
 
