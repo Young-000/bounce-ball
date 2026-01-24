@@ -78,13 +78,31 @@ export function useGameState(): UseGameStateReturn {
 
   // 다음 스테이지
   const nextStage = useCallback(() => {
-    const nextStageNumber = currentStageNumber + 1;
-    if (nextStageNumber <= getTotalStages()) {
-      startGame(nextStageNumber);
-    } else {
-      goToStart();
+    const nextStageNum = currentStageNumber + 1;
+
+    if (nextStageNum > getTotalStages()) {
+      // 모든 스테이지 클리어
+      setScreen('start');
+      setGameState(null);
+      return;
     }
-  }, [currentStageNumber, startGame, goToStart]);
+
+    const stage = getStage(nextStageNum);
+    if (!stage) {
+      // 스테이지 데이터 없음 (안전장치)
+      setScreen('start');
+      setGameState(null);
+      return;
+    }
+
+    // 직접 상태 설정 (startGame 의존성 제거)
+    const initialState = initializeStage(stage, nextStageNum);
+    initialState.status = 'playing';
+
+    setGameState(initialState);
+    setCurrentStageNumber(nextStageNum);
+    setScreen('playing');
+  }, [currentStageNumber]);
 
   // 게임 업데이트
   const updateGame = useCallback((input: InputState, deltaTime: number) => {

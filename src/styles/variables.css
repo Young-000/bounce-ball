@@ -1,80 +1,87 @@
-/* 게임 색상 변수 - 2000년대 플래시 게임 감성 */
+/* 게임 색상 변수 - 빈티지 픽셀 / 네온 레트로 */
 :root {
-  /* ===== 배경 색상 ===== */
-  --bg-main: #1a1a2e;
-  --bg-game: #16213e;
-  --bg-panel: #0f3460;
-  --bg-overlay: rgba(0, 0, 0, 0.7);
+  /* ===== 배경 색상 - 어두운 CRT 모니터 ===== */
+  --bg-main: #0d0d1a;
+  --bg-game: #0a0a14;
+  --bg-panel: #141428;
+  --bg-overlay: rgba(0, 0, 0, 0.85);
 
-  /* ===== 블록 색상 (벽돌 감성) ===== */
-  /* Normal Block - 갈색 벽돌 */
-  --block-normal: #8b7355;
-  --block-normal-light: #a68968;
-  --block-normal-dark: #6b5544;
-  --block-normal-border: #4a3f35;
+  /* ===== 블록 색상 (8bit 팔레트) ===== */
+  /* Normal Block - 시안/그레이 벽돌 */
+  --block-normal: #5a7a8a;
+  --block-normal-light: #7a9aaa;
+  --block-normal-dark: #3a5a6a;
+  --block-normal-border: #2a3a4a;
 
-  /* Jump Block - 오렌지 골드 */
-  --block-jump: #f4a261;
-  --block-jump-light: #ffd89b;
-  --block-jump-dark: #d68f4c;
-  --block-jump-border: #c77b3f;
+  /* Jump Block - 네온 옐로우 */
+  --block-jump: #ffee00;
+  --block-jump-light: #ffff44;
+  --block-jump-dark: #ccaa00;
+  --block-jump-border: #886600;
 
-  /* Breakable Block - 회색 벽돌 */
-  --block-breakable: #94a3b8;
-  --block-breakable-light: #cbd5e1;
-  --block-breakable-dark: #64748b;
-  --block-breakable-border: #475569;
-  --block-breakable-crack: #1e293b;
+  /* Breakable Block - 픽셀 브라운 */
+  --block-breakable: #8b6914;
+  --block-breakable-light: #ab8934;
+  --block-breakable-dark: #5b4904;
+  --block-breakable-border: #3b2904;
+  --block-breakable-crack: #1a1a1a;
 
-  /* Arrow Block - 밝은 파랑 */
-  --block-arrow: #4dabf7;
-  --block-arrow-light: #74c0fc;
-  --block-arrow-dark: #339af0;
-  --block-arrow-border: #1c7ed6;
+  /* Arrow Block - 네온 블루 */
+  --block-arrow: #00aaff;
+  --block-arrow-light: #44ccff;
+  --block-arrow-dark: #0088cc;
+  --block-arrow-border: #004488;
 
-  /* Bomb Block - 빨강 */
-  --block-bomb: #ff6b6b;
-  --block-bomb-light: #ff8787;
-  --block-bomb-dark: #fa5252;
-  --block-bomb-border: #e03131;
+  /* Bomb Block - 네온 레드 */
+  --block-bomb: #ff2244;
+  --block-bomb-light: #ff4466;
+  --block-bomb-dark: #cc0022;
+  --block-bomb-border: #880011;
 
-  /* ===== 공 색상 ===== */
-  --ball-main: #ffe66d;
-  --ball-light: #ffed4e;
-  --ball-dark: #ffd43b;
-  --ball-outline: #ffc107;
-  --ball-shadow: rgba(255, 169, 77, 0.5);
+  /* ===== 공 색상 - 네온 그린 ===== */
+  --ball-main: #00ff88;
+  --ball-light: #44ffaa;
+  --ball-dark: #00cc66;
+  --ball-outline: #008844;
+  --ball-shadow: rgba(0, 255, 136, 0.5);
 
-  /* ===== 출구 색상 ===== */
-  --exit-main: #2ec4b6;
-  --exit-light: #4fd1c5;
-  --exit-dark: #06a09e;
-  --exit-glow: rgba(46, 196, 182, 0.4);
+  /* ===== 출구 색상 - 네온 퍼플 ===== */
+  --exit-main: #aa44ff;
+  --exit-light: #cc66ff;
+  --exit-dark: #8822cc;
+  --exit-glow: rgba(170, 68, 255, 0.6);
 
-  /* ===== UI 색상 ===== */
-  --ui-primary: #f4a261;
-  --ui-primary-hover: #e76f51;
-  --ui-secondary: #4dabf7;
-  --ui-secondary-hover: #339af0;
-  --ui-success: #51cf66;
-  --ui-danger: #ff6b6b;
-  --ui-disabled: #64748b;
+  /* ===== UI 색상 - 레트로 네온 ===== */
+  --ui-primary: #ff6600;
+  --ui-primary-hover: #ff8833;
+  --ui-secondary: #00aaff;
+  --ui-secondary-hover: #44ccff;
+  --ui-success: #00ff88;
+  --ui-danger: #ff2244;
+  --ui-disabled: #444466;
 
   /* ===== 텍스트 색상 ===== */
   --text-primary: #ffffff;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --text-accent: #f4a261;
+  --text-secondary: #aaaacc;
+  --text-muted: #666688;
+  --text-accent: #ffee00;
 
   /* ===== 컨트롤 색상 ===== */
-  --control-bg: rgba(255, 255, 255, 0.1);
-  --control-border: rgba(255, 255, 255, 0.2);
-  --control-active: rgba(244, 162, 97, 0.4);
-  --control-icon: #ffffff;
+  --control-bg: rgba(0, 170, 255, 0.15);
+  --control-border: rgba(0, 170, 255, 0.4);
+  --control-active: rgba(255, 102, 0, 0.5);
+  --control-icon: #00aaff;
 
-  /* ===== 그림자 ===== */
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.5);
-  --shadow-pixel: 4px 4px 0 rgba(0, 0, 0, 0.3);
+  /* ===== 그림자 (픽셀 스타일) ===== */
+  --shadow-sm: 2px 2px 0 #000;
+  --shadow-md: 3px 3px 0 #000;
+  --shadow-lg: 4px 4px 0 #000;
+  --shadow-pixel: 4px 4px 0 #000;
+
+  /* ===== 네온 글로우 ===== */
+  --glow-green: 0 0 10px #00ff88, 0 0 20px #00ff8866;
+  --glow-blue: 0 0 10px #00aaff, 0 0 20px #00aaff66;
+  --glow-purple: 0 0 10px #aa44ff, 0 0 20px #aa44ff66;
+  --glow-yellow: 0 0 10px #ffee00, 0 0 20px #ffee0066;
+  --glow-red: 0 0 10px #ff2244, 0 0 20px #ff224466;
 }

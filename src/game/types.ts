@@ -7,8 +7,8 @@ export const GAME_CONFIG = {
   MAX_VELOCITY_Y: 12,     // 최대 낙하 속도
   FRICTION: 0.85,         // 공중 마찰 (좌우 감속)
 
-  // 공 설정 - 작게!
-  BALL_RADIUS: 6,
+  // 공 설정
+  BALL_RADIUS: 4,
 
   // 블록 설정
   BLOCK_HEIGHT: 16,

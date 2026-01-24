@@ -1,50 +1,54 @@
 import { Block, BlockType } from '../../../game/types';
 
 /**
- * 블록 색상 정의 (벽돌 감성)
+ * 블록 색상 정의 (네온 레트로 픽셀)
  */
 const BLOCK_COLORS: Record<BlockType, {
   main: string;
   light: string;
   dark: string;
   border: string;
+  glow?: string;
 }> = {
   normal: {
-    main: '#8b7355',
-    light: '#a68968',
-    dark: '#6b5544',
-    border: '#4a3f35',
+    main: '#5a7a8a',
+    light: '#7a9aaa',
+    dark: '#3a5a6a',
+    border: '#2a3a4a',
   },
   jump: {
-    main: '#f4a261',
-    light: '#ffd89b',
-    dark: '#d68f4c',
-    border: '#c77b3f',
+    main: '#ffee00',
+    light: '#ffff44',
+    dark: '#ccaa00',
+    border: '#886600',
+    glow: '#ffee0066',
   },
   breakable: {
-    main: '#94a3b8',
-    light: '#cbd5e1',
-    dark: '#64748b',
-    border: '#475569',
+    main: '#8b6914',
+    light: '#ab8934',
+    dark: '#5b4904',
+    border: '#3b2904',
   },
   arrow: {
-    main: '#4dabf7',
-    light: '#74c0fc',
-    dark: '#339af0',
-    border: '#1c7ed6',
+    main: '#00aaff',
+    light: '#44ccff',
+    dark: '#0088cc',
+    border: '#004488',
+    glow: '#00aaff66',
   },
   bomb: {
-    main: '#ff6b6b',
-    light: '#ff8787',
-    dark: '#fa5252',
-    border: '#e03131',
+    main: '#ff2244',
+    light: '#ff4466',
+    dark: '#cc0022',
+    border: '#880011',
+    glow: '#ff224466',
   },
 };
 
 /**
- * 3D 벽돌 효과로 블록을 그립니다
+ * 픽셀 스타일 블록 (8bit 느낌)
  */
-function drawBrickBlock(
+function drawPixelBlock(
   ctx: CanvasRenderingContext2D,
   x: number,
   y: number,
@@ -52,35 +56,35 @@ function drawBrickBlock(
   height: number,
   colors: typeof BLOCK_COLORS.normal
 ): void {
-  const borderWidth = 2;
-  const highlightWidth = 3;
+  // 픽셀 크기
+  const px = 2;
 
   // 1. 메인 색상 (베이스)
   ctx.fillStyle = colors.main;
   ctx.fillRect(x, y, width, height);
 
-  // 2. 하이라이트 (상단/좌측 - 밝은 색)
+  // 2. 하이라이트 (상단/좌측 - 밝은 색) - 픽셀 단위
   ctx.fillStyle = colors.light;
-  // 상단
-  ctx.fillRect(x, y, width, highlightWidth);
-  // 좌측
-  ctx.fillRect(x, y, highlightWidth, height);
+  ctx.fillRect(x, y, width, px * 2);
+  ctx.fillRect(x, y, px * 2, height);
 
   // 3. 그림자 (하단/우측 - 어두운 색)
   ctx.fillStyle = colors.dark;
-  // 하단
-  ctx.fillRect(x, y + height - highlightWidth, width, highlightWidth);
-  // 우측
-  ctx.fillRect(x + width - highlightWidth, y, highlightWidth, height);
+  ctx.fillRect(x, y + height - px * 2, width, px * 2);
+  ctx.fillRect(x + width - px * 2, y, px * 2, height);
 
-  // 4. 테두리 (모르타르 라인)
+  // 4. 코너 어두운 부분
+  ctx.fillStyle = colors.border;
+  ctx.fillRect(x + width - px * 2, y + height - px * 2, px * 2, px * 2);
+
+  // 5. 외곽선
   ctx.strokeStyle = colors.border;
-  ctx.lineWidth = borderWidth;
-  ctx.strokeRect(x + 1, y + 1, width - 2, height - 2);
+  ctx.lineWidth = 1;
+  ctx.strokeRect(x + 0.5, y + 0.5, width - 1, height - 1);
 }
 
 /**
- * 점프 블록 (스프링 효과)
+ * 점프 블록 (스프링 - 네온 옐로우)
  */
 function drawJumpBlock(
   ctx: CanvasRenderingContext2D,
@@ -89,21 +93,33 @@ function drawJumpBlock(
 ): void {
   const colors = BLOCK_COLORS.jump;
 
-  // 살짝 펄스 효과
-  const pulseOffset = Math.sin(time * 0.005) * 2;
+  // 펄스 효과
+  const pulse = Math.sin(time * 0.008) * 1.5;
 
-  drawBrickBlock(ctx, block.x, block.y - pulseOffset, block.width, block.height + pulseOffset, colors);
+  // 글로우
+  if (colors.glow) {
+    ctx.shadowColor = colors.glow;
+    ctx.shadowBlur = 10 + pulse * 2;
+  }
 
-  // 위쪽 화살표 심볼
-  ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 12px Arial';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('↑↑', block.x + block.width / 2, block.y + block.height / 2);
+  drawPixelBlock(ctx, block.x, block.y, block.width, block.height, colors);
+
+  ctx.shadowBlur = 0;
+
+  // 픽셀 화살표 심볼 (8bit 스타일)
+  const centerX = block.x + block.width / 2;
+  const centerY = block.y + block.height / 2;
+
+  ctx.fillStyle = '#000000';
+  // 위쪽 삼각형 (픽셀)
+  const px = 2;
+  for (let i = 0; i < 4; i++) {
+    ctx.fillRect(centerX - (3 - i) * px, centerY - 2 + i * px, (6 - i * 2) * px, px);
+  }
 }
 
 /**
- * 부서지는 블록 (균열 효과)
+ * 부서지는 블록 (균열 패턴)
  */
 function drawBreakableBlock(
   ctx: CanvasRenderingContext2D,
@@ -111,75 +127,81 @@ function drawBreakableBlock(
 ): void {
   const colors = BLOCK_COLORS.breakable;
 
-  drawBrickBlock(ctx, block.x, block.y, block.width, block.height, colors);
+  drawPixelBlock(ctx, block.x, block.y, block.width, block.height, colors);
 
-  // 균열 패턴
-  ctx.strokeStyle = '#1e293b';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
+  // 픽셀 균열 패턴
+  ctx.fillStyle = '#1a1a1a';
+  const px = 2;
 
-  // 대각선 균열
-  ctx.moveTo(block.x + block.width * 0.3, block.y);
-  ctx.lineTo(block.x + block.width * 0.5, block.y + block.height * 0.5);
-  ctx.lineTo(block.x + block.width * 0.4, block.y + block.height);
+  // 균열 라인들
+  ctx.fillRect(block.x + block.width * 0.3, block.y, px, block.height * 0.4);
+  ctx.fillRect(block.x + block.width * 0.3 - px, block.y + block.height * 0.4, px * 3, px);
+  ctx.fillRect(block.x + block.width * 0.25, block.y + block.height * 0.4, px, block.height * 0.6);
 
-  ctx.moveTo(block.x + block.width * 0.7, block.y);
-  ctx.lineTo(block.x + block.width * 0.6, block.y + block.height * 0.6);
-  ctx.lineTo(block.x + block.width * 0.8, block.y + block.height);
-
-  ctx.stroke();
+  ctx.fillRect(block.x + block.width * 0.7, block.y + block.height * 0.2, px, block.height * 0.5);
+  ctx.fillRect(block.x + block.width * 0.65, block.y + block.height * 0.7, px * 3, px);
 }
 
 /**
- * 화살표 블록 (방향 표시)
+ * 화살표 블록 (방향 - 네온 블루)
  */
 function drawArrowBlock(
   ctx: CanvasRenderingContext2D,
-  block: Block
+  block: Block,
+  time: number
 ): void {
   const colors = BLOCK_COLORS.arrow;
 
-  drawBrickBlock(ctx, block.x, block.y, block.width, block.height, colors);
-
-  // 화살표 그리기
-  const centerX = block.x + block.width / 2;
-  const centerY = block.y + block.height / 2;
-  const arrowSize = Math.min(block.width, block.height) * 0.4;
-
-  ctx.fillStyle = '#ffffff';
-  ctx.beginPath();
-
-  const direction = block.direction || 'up';
-
-  switch (direction) {
-    case 'up':
-      ctx.moveTo(centerX, centerY - arrowSize);
-      ctx.lineTo(centerX - arrowSize * 0.6, centerY + arrowSize * 0.3);
-      ctx.lineTo(centerX + arrowSize * 0.6, centerY + arrowSize * 0.3);
-      break;
-    case 'down':
-      ctx.moveTo(centerX, centerY + arrowSize);
-      ctx.lineTo(centerX - arrowSize * 0.6, centerY - arrowSize * 0.3);
-      ctx.lineTo(centerX + arrowSize * 0.6, centerY - arrowSize * 0.3);
-      break;
-    case 'left':
-      ctx.moveTo(centerX - arrowSize, centerY);
-      ctx.lineTo(centerX + arrowSize * 0.3, centerY - arrowSize * 0.6);
-      ctx.lineTo(centerX + arrowSize * 0.3, centerY + arrowSize * 0.6);
-      break;
-    case 'right':
-      ctx.moveTo(centerX + arrowSize, centerY);
-      ctx.lineTo(centerX - arrowSize * 0.3, centerY - arrowSize * 0.6);
-      ctx.lineTo(centerX - arrowSize * 0.3, centerY + arrowSize * 0.6);
-      break;
+  // 글로우
+  const pulse = Math.sin(time * 0.006) * 2;
+  if (colors.glow) {
+    ctx.shadowColor = colors.glow;
+    ctx.shadowBlur = 8 + pulse;
   }
 
-  ctx.closePath();
-  ctx.fill();
+  drawPixelBlock(ctx, block.x, block.y, block.width, block.height, colors);
+
+  ctx.shadowBlur = 0;
+
+  // 픽셀 화살표 (방향)
+  const centerX = block.x + block.width / 2;
+  const centerY = block.y + block.height / 2;
+  const direction = block.direction || 'up';
+  const px = 2;
+
+  ctx.fillStyle = '#ffffff';
+
+  // 화살표 픽셀 아트
+  switch (direction) {
+    case 'up':
+      for (let i = 0; i < 3; i++) {
+        ctx.fillRect(centerX - (2 - i) * px, centerY - 3 * px + i * px, (4 - i * 2) * px, px);
+      }
+      ctx.fillRect(centerX - px, centerY, px * 2, px * 3);
+      break;
+    case 'down':
+      for (let i = 0; i < 3; i++) {
+        ctx.fillRect(centerX - (2 - i) * px, centerY + 1 * px + i * px, (4 - i * 2) * px, px);
+      }
+      ctx.fillRect(centerX - px, centerY - px * 3, px * 2, px * 3);
+      break;
+    case 'left':
+      for (let i = 0; i < 3; i++) {
+        ctx.fillRect(centerX - 3 * px + i * px, centerY - (2 - i) * px, px, (4 - i * 2) * px);
+      }
+      ctx.fillRect(centerX, centerY - px, px * 3, px * 2);
+      break;
+    case 'right':
+      for (let i = 0; i < 3; i++) {
+        ctx.fillRect(centerX + 1 * px + i * px, centerY - (2 - i) * px, px, (4 - i * 2) * px);
+      }
+      ctx.fillRect(centerX - px * 3, centerY - px, px * 3, px * 2);
+      break;
+  }
 }
 
 /**
- * 폭탄 블록 (위험 표시 + 펄스)
+ * 폭탄 블록 (위험 - 네온 레드)
  */
 function drawBombBlock(
   ctx: CanvasRenderingContext2D,
@@ -188,19 +210,36 @@ function drawBombBlock(
 ): void {
   const colors = BLOCK_COLORS.bomb;
 
-  // 펄스 효과 (투명도)
-  const pulse = 0.7 + Math.sin(time * 0.01) * 0.3;
+  // 펄스 효과
+  const pulse = 0.6 + Math.sin(time * 0.015) * 0.4;
+
+  // 글로우
+  if (colors.glow) {
+    ctx.shadowColor = colors.glow;
+    ctx.shadowBlur = 12 * pulse;
+  }
 
   ctx.globalAlpha = pulse;
-  drawBrickBlock(ctx, block.x, block.y, block.width, block.height, colors);
+  drawPixelBlock(ctx, block.x, block.y, block.width, block.height, colors);
   ctx.globalAlpha = 1;
+  ctx.shadowBlur = 0;
 
-  // 위험 심볼
+  // 픽셀 해골 심볼
+  const centerX = block.x + block.width / 2;
+  const centerY = block.y + block.height / 2;
+  const px = 2;
+
   ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 14px Arial';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('☠', block.x + block.width / 2, block.y + block.height / 2);
+
+  // 해골 머리
+  ctx.fillRect(centerX - px * 2, centerY - px * 3, px * 4, px * 4);
+  // 눈
+  ctx.fillStyle = '#000000';
+  ctx.fillRect(centerX - px * 1.5, centerY - px * 2, px, px);
+  ctx.fillRect(centerX + px * 0.5, centerY - px * 2, px, px);
+  // 이빨
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(centerX - px, centerY + px, px * 2, px);
 }
 
 /**
@@ -211,7 +250,7 @@ function drawNormalBlock(
   block: Block
 ): void {
   const colors = BLOCK_COLORS.normal;
-  drawBrickBlock(ctx, block.x, block.y, block.width, block.height, colors);
+  drawPixelBlock(ctx, block.x, block.y, block.width, block.height, colors);
 }
 
 /**
@@ -235,7 +274,7 @@ export function renderBlock(
       drawBreakableBlock(ctx, block);
       break;
     case 'arrow':
-      drawArrowBlock(ctx, block);
+      drawArrowBlock(ctx, block, time);
       break;
     case 'bomb':
       drawBombBlock(ctx, block, time);
