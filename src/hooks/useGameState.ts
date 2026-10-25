@@ -6,6 +6,7 @@ import {
   saveStageRecord,
   getStageRecord,
 } from '../game/storage/saveService';
+import { trackAmplitude } from '../analytics/amplitude';
 
 type Screen = 'start' | 'stageSelect' | 'playing' | 'clear' | 'dead';
 
@@ -53,6 +54,7 @@ export function useGameState(): UseGameStateReturn {
     setGameState(initialState);
     setCurrentStageNumber(stageNumber);
     setScreen('playing');
+    trackAmplitude('stage_started', { stage: stageNumber });
   }, []);
 
   // 스테이지 선택 화면으로
@@ -102,6 +104,7 @@ export function useGameState(): UseGameStateReturn {
     setGameState(initialState);
     setCurrentStageNumber(nextStageNum);
     setScreen('playing');
+    trackAmplitude('stage_started', { stage: nextStageNum });
   }, [currentStageNumber]);
 
   // 게임 업데이트
@@ -124,10 +127,17 @@ export function useGameState(): UseGameStateReturn {
       // 저장 서비스로 기록 저장
       saveStageRecord(currentStageNumber, clearTime, deathCount);
 
+      trackAmplitude('stage_cleared', {
+        stage: currentStageNumber,
+        clear_time: clearTime,
+        death_count: deathCount,
+        is_new_record: newRecord,
+      });
       setIsNewRecord(newRecord);
       setScreen('clear');
     } else if (newState.status === 'dead' && gameState.status !== 'dead') {
       // 사망!
+      trackAmplitude('stage_failed', { stage: currentStageNumber });
       setScreen('dead');
     }
   }, [gameState, screen, currentStageNumber]);

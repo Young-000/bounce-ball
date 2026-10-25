@@ -18,6 +18,11 @@
 | 테스트 | ✅ (31/31 통과) |
 | 배포 | ✅ |
 
+## 분석 (Amplitude)
+
+- `src/analytics/` — `VITE_AMPLITUDE_API_KEY` 빌드 시 주입, 키 없으면 전송 없음 (봇·webdriver 제외)
+- 이벤트: stage_started, stage_cleared, stage_failed
+
 ## 게임 설정 (GAME_CONFIG)
 
 | 설정 | 값 |
